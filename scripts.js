@@ -1,8 +1,8 @@
 /***** 1. Firebase Initialization *****/
 // Replace these with your actual Firebase config values.
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  apiKey: "AIzaSyBgGoJ2s9KN3YNtS3ZY9sb3GlwoPQp8kak",
+  authDomain: "pulsewise-ff8e7.firebaseapp.com",
   // ... additional config values as needed
 };
 firebase.initializeApp(firebaseConfig);
@@ -113,7 +113,7 @@ function parseExtractedText(text) {
 payBtn.addEventListener("click", () => {
   const options = {
     "key": "YOUR_RAZORPAY_KEY",  // Replace with your Razorpay key.
-    "amount": 5000,              // Amount in paise (e.g., ₹50.00).
+    "amount": 700,              // Amount in paise (e.g., ₹7.00).
     "currency": "INR",
     "name": "Pulsewise",
     "description": "AI Blood Report Analysis",
@@ -146,7 +146,7 @@ function finalizeReport() {
     originalFileName
   };
   // Call the Google Apps Script endpoint.
-  fetch('https://script.google.com/macros/s/YOUR_APPS_SCRIPT_DEPLOYED_URL/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbwlrpn8K8yy7bpP-kyE16BdwlLXFYV2oXM09KR9DDnGHRxVBwFXjxWmTtxH79mInBR7/exec', {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
