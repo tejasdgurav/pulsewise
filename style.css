@@ -12,7 +12,7 @@ header {
   padding: 10px;
   text-align: right;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .top-right button {
@@ -22,6 +22,7 @@ header {
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .container {
@@ -37,6 +38,7 @@ header {
   cursor: pointer;
   background-color: #fff;
   position: relative;
+  transition: background-color 0.3s;
 }
 
 .upload-area p {
@@ -50,4 +52,33 @@ header {
 
 .upload-area.dragover {
   background-color: #e7f0fd;
+}
+
+.hidden {
+  display: none;
+}
+
+.dashboard {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.dashboard h2 {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.report-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.report-item a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+#status-message {
+  margin-top: 20px;
+  font-style: italic;
 }

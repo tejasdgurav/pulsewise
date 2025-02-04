@@ -13,23 +13,29 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <!-- Top Bar with Google Sign-In Button -->
+  <!-- Top Bar with Sign-In and Dashboard Buttons -->
   <header>
     <div class="top-right">
       <button id="google-signin-btn">Sign in with Google</button>
+      <button id="my-reports-btn" class="hidden">My Reports</button>
     </div>
   </header>
 
-  <!-- Main Container with Upload Area -->
+  <!-- Main Container -->
   <div class="container">
     <h1>Pulsewise</h1>
     <div id="upload-area" class="upload-area">
       <p>Drag your report here or click to upload</p>
       <input type="file" id="file-input" accept=".pdf,image/*" />
     </div>
+    <div id="status-message"></div>
+    <!-- Dashboard Section (hidden by default) -->
+    <div id="dashboard" class="dashboard hidden">
+      <h2>My Reports</h2>
+      <div id="reports-list"></div>
+    </div>
   </div>
-
-  <!-- Frontend Script (using ES modules) -->
+  <!-- Frontend Script -->
   <script src="script.js" type="module"></script>
 </body>
 </html>
