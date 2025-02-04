@@ -13,7 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <!-- Top Bar with Sign In Button -->
+  <!-- Top Bar with Google Sign-In Button -->
   <header>
     <div class="top-right">
       <button id="google-signin-btn">Sign in with Google</button>
@@ -29,43 +29,7 @@
     </div>
   </div>
 
-  <!-- Frontend Script -->
-  <script type="module">
-    // Import the functions you need from the SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
-
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBgGoJ2s9KN3YNtS3ZY9sb3GlwoPQp8kak",
-      authDomain: "pulsewise-ff8e7.firebaseapp.com",
-      projectId: "pulsewise-ff8e7",
-      storageBucket: "pulsewise-ff8e7.appspot.com",
-      messagingSenderId: "595991869636",
-      appId: "1:595991869636:web:d496baec48a18460773191",
-      measurementId: "G-WT76Z1EQTM"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-
-    // Initialize Firebase Auth
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    // Sign-in function
-    document.getElementById("google-signin-btn").addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        alert(`Signed in as: ${user.displayName}`);
-      } catch (error) {
-        console.error("Sign-in error:", error);
-        alert("Error signing in");
-      }
-    });
-  </script>
+  <!-- Frontend Script (using ES modules) -->
+  <script src="script.js" type="module"></script>
 </body>
 </html>
