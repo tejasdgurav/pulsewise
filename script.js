@@ -30,7 +30,9 @@ const reportsList = document.getElementById("reports-list");
 let currentUser = null;
 let selectedFile = null;
 
-// --- Google Sign-In ---
+/* -----------------------------------------------------
+   Google Sign-In
+------------------------------------------------------ */
 googleSigninBtn.addEventListener("click", async () => {
   try {
     const result = await signInWithPopup(auth, provider);
@@ -43,7 +45,9 @@ googleSigninBtn.addEventListener("click", async () => {
   }
 });
 
-// --- File Upload & Drag-and-Drop Handling ---
+/* -----------------------------------------------------
+   File Upload & Drag-and-Drop Handling
+------------------------------------------------------ */
 uploadArea.addEventListener("click", () => fileInput.click());
 
 fileInput.addEventListener("change", (e) => {
@@ -72,7 +76,9 @@ uploadArea.addEventListener("drop", (e) => {
   }
 });
 
-// --- Razorpay Payment Integration ---
+/* -----------------------------------------------------
+   Razorpay Payment Integration
+------------------------------------------------------ */
 function initiatePayment() {
   if (!currentUser) {
     alert("Please sign in with Google first.");
@@ -83,7 +89,7 @@ function initiatePayment() {
 
   const options = {
     key: "rzp_live_8cnyH5yfjbgDRD",  // REPLACE with your Razorpay key
-    amount: 100,              // Example: ₹1.00 = 100 paise
+    amount: 100,                     // Example: ₹1.00 = 100 paise
     currency: "INR",
     name: "Pulsewise",
     description: "AI Blood Report Analysis",
@@ -106,7 +112,9 @@ function initiatePayment() {
   rzp.open();
 }
 
-// --- Process the Report & Send Data to Backend ---
+/* -----------------------------------------------------
+   Process the Report & Send Data to Backend
+------------------------------------------------------ */
 async function processReport(paymentId) {
   if (!selectedFile) {
     alert("No file selected.");
@@ -126,9 +134,11 @@ async function processReport(paymentId) {
       return;
     }
   } else if (selectedFile.type === "application/pdf") {
+    // If PDF, you can integrate a PDF parsing library or do a server-side parse.
+    // For simplicity, let's simulate extracted text:
     extractedText = "Simulated extracted text from PDF.";
   } else {
-    alert("Unsupported file type.");
+    alert("Unsupported file type. Please upload a PDF or image file.");
     return;
   }
 
@@ -141,7 +151,10 @@ async function processReport(paymentId) {
   };
 
   try {
-    const res = await fetch("https://script.google.com/macros/s/AKfycbzYYyOn1JgI2oMpPhrP2vDkolpOYkb1ZxxFmFDkAb6CTDoDYE7qb9rptf5vg6QC8_Zn/exec", {
+    // Replace with your deployed Apps Script URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzoLE_yJzXd9BXrdIL3B0cY2NdedMMCd_kmstl2kjMZ6Xvy9pOceh9dnEadYIe_dq4q/exec";
+
+    const res = await fetch(scriptURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
@@ -164,7 +177,9 @@ async function processReport(paymentId) {
   }
 }
 
-// --- Generate & Download PDF using jsPDF ---
+/* -----------------------------------------------------
+   Generate & Download PDF using jsPDF
+------------------------------------------------------ */
 function downloadPDF(summaryText) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -176,7 +191,9 @@ function downloadPDF(summaryText) {
   statusMessage.textContent = "Report downloaded.";
 }
 
-// --- Dashboard: Fetch & Display User Reports ---
+/* -----------------------------------------------------
+   Dashboard: Fetch & Display User Reports
+------------------------------------------------------ */
 myReportsBtn.addEventListener("click", () => {
   if (!currentUser) {
     alert("Please sign in first.");
@@ -188,7 +205,9 @@ myReportsBtn.addEventListener("click", () => {
 async function fetchReports(userEmail) {
   statusMessage.textContent = "Loading your reports...";
   try {
-    const res = await fetch(`https://script.google.com/macros/s/AKfycbzYYyOn1JgI2oMpPhrP2vDkolpOYkb1ZxxFmFDkAb6CTDoDYE7qb9rptf5vg6QC8_Zn/exec?action=getReports&userEmail=${encodeURIComponent(userEmail)}`);
+    // Replace with your deployed Apps Script URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzoLE_yJzXd9BXrdIL3B0cY2NdedMMCd_kmstl2kjMZ6Xvy9pOceh9dnEadYIe_dq4q/exec";
+    const res = await fetch(`${scriptURL}?action=getReports&userEmail=${encodeURIComponent(userEmail)}`);
     const data = await res.json();
 
     if (data.result === "success" && data.reports) {
@@ -219,9 +238,11 @@ function renderReports(reports) {
     item.className = "report-item";
 
     const ts = new Date(report["Timestamp"]);
-    item.innerHTML = `<strong>${ts.toLocaleString()}</strong><br>
-                      <em>${report["Original File Name"]}</em><br>
-                      <a href="${report["PDF URL"]}" target="_blank">View PDF Report</a>`;
+    item.innerHTML = `
+      <strong>${ts.toLocaleString()}</strong><br>
+      <em>${report["Original File Name"]}</em><br>
+      <a href="${report["PDF URL"]}" target="_blank">View PDF Report</a>
+    `;
     reportsList.appendChild(item);
   });
 }

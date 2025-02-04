@@ -1,4 +1,4 @@
-/* Minimal, Notion-inspired design */
+/* Minimal, Notion-inspired design with references from your other projects */
 
 body {
   margin: 0;
@@ -29,6 +29,11 @@ header {
   max-width: 640px;
   margin: 80px auto;
   text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
 }
 
 .upload-area {
