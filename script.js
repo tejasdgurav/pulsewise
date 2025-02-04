@@ -72,7 +72,7 @@ function initiatePayment() {
 
   const options = {
     key: "rzp_live_ewrzTufDiddrHg",  // Replace with your Razorpay API key
-    amount: 700,              // Amount in paise (e.g., ₹7.00 = 700 paise)
+    amount: 700,                     // Amount in paise (e.g., ₹7.00 = 700 paise)
     currency: "INR",
     name: "Pulsewise",
     description: "AI Blood Report Analysis",
@@ -92,9 +92,7 @@ function initiatePayment() {
   rzp.open();
 }
 
-/***** 6. Process the Report & Generate AI Summary *****/
-// In this example, we simulate OCR and AI summarization on the client side.
-// (You can integrate Tesseract.js and an AI API if desired.)
+/***** 6. Process the Report & Send Data to Backend for AI Summarization *****/
 async function processReport(paymentId) {
   if (!selectedFile) {
     alert("No file selected.");
@@ -113,27 +111,24 @@ async function processReport(paymentId) {
       return;
     }
   }
-  // If PDF, you could use pdf.js; here we assume text extraction is done.
+  // If the file is a PDF, you might use pdf.js; here we simulate text extraction.
   else if (selectedFile.type === "application/pdf") {
-    // For simplicity, we simulate text extraction.
+    // For a production system, integrate pdf.js for real text extraction.
     extractedText = "Simulated extracted text from PDF.";
   } else {
     extractedText = "Unsupported file type.";
   }
 
-  // Simulate AI summarization – replace this with your own AI controller logic
-  const aiSummary = "This is your AI-generated blood report summary. All key parameters are within normal limits.";
-
-  // Prepare final data payload to send to the Google Apps Script backend.
+  // Prepare final data payload to send to the backend.
+  // Note: We no longer send an AI summary from the client.
   const payload = {
     userEmail: currentUser.email,
     paymentId: paymentId,
     originalFileName: selectedFile.name,
-    aiSummary: aiSummary,
     extractedText: extractedText
   };
 
-  // Call the Google Apps Script endpoint (update URL accordingly)
+  // Call the Google Apps Script endpoint – update the URL below with your deployed endpoint.
   fetch("https://script.google.com/macros/s/AKfycbwCIlImDg-nqqP02JtVfaCJwIHIbaw1vCq37BELLGcl9-9FDmtvJ3SS6cWegvQGmXjM/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -142,9 +137,9 @@ async function processReport(paymentId) {
   .then((res) => res.json())
   .then((data) => {
     console.log("Backend response:", data);
-    if (data.result === "success") {
+    if (data.result === "success" && data.aiSummary) {
       // After backend processing, automatically generate and download the PDF.
-      downloadPDF(aiSummary);
+      downloadPDF(data.aiSummary);
     } else {
       alert("Error processing report on backend.");
     }
@@ -165,6 +160,6 @@ function downloadPDF(summaryText) {
   doc.setFontSize(12);
   doc.text(summaryText, 20, 40, { maxWidth: 170 });
   
-  // Trigger download automatically
+  // Automatically trigger the download of the PDF.
   doc.save("Pulsewise_Report.pdf");
 }
