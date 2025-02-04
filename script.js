@@ -72,7 +72,7 @@ function initiatePayment() {
 
   const options = {
     key: "YOUR_RAZORPAY_KEY",  // Replace with your Razorpay API key
-    amount: 5000,              // Amount in paise (e.g., ₹50.00 = 5000 paise)
+    amount: 700,              // Amount in paise (e.g., ₹7.00 = 700 paise)
     currency: "INR",
     name: "Pulsewise",
     description: "AI Blood Report Analysis",
