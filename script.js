@@ -83,7 +83,7 @@ function initiatePayment() {
   statusMessage.textContent = "Launching payment gateway...";
   const options = {
     key: "rzp_live_ewrzTufDiddrHg", // REPLACE with your Razorpay API key
-    amount: 700,                   // ₹7.00 = 700 paise
+    amount: 100,                   // ₹1.00 = 100 paise
     currency: "INR",
     name: "Pulsewise",
     description: "AI Blood Report Analysis",
