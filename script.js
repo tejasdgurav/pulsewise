@@ -39,7 +39,7 @@ const CONFIG = {
     name: "Pulsewise",
     description: "AI Blood Report Analysis"
   },
-  appsScriptURL: "https://script.google.com/macros/s/AKfycby5tYwMCXvOJPncGjDB2-RE5_gI4fx-pxQBhYbo1ndvAq33VkyYMPJt15CLucvtSdjH/exec" 
+  appsScriptURL: "https://script.google.com/macros/s/AKfycbwRJYnnBwdll57OUy_vIDyEOhrHDaEOZOyjKTId8XH7BucHTT_opr_ZDVH7ZI3For_i/exec" 
     // <-- Replace with your deployed Apps Script URL
 };
 
