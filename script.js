@@ -134,7 +134,7 @@ async function processReport(paymentId) {
   };
 
   // Call the Google Apps Script endpoint (update URL accordingly)
-  fetch("https://script.google.com/macros/s/AKfycbwbkZYIHmwZGnupA6_TwusqkuU8CQHXio5p3_IYcnYa1yWgrWUBRKWwf4BI4p8mP4YK/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwCIlImDg-nqqP02JtVfaCJwIHIbaw1vCq37BELLGcl9-9FDmtvJ3SS6cWegvQGmXjM/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
