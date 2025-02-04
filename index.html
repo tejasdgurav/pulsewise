@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pulsewise - AI Blood Report Analysis</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <!-- Razorpay -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Tesseract.js for OCR -->
+  <script src="https://unpkg.com/tesseract.js@v2.1.4/dist/tesseract.min.js"></script>
+  <!-- PDF.js for PDF text extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <!-- jsPDF for optional client-side PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Pulsewise</h1>
+    <p>Instant AI blood report analysis. Upload your report, pay, and get your summary!</p>
+    
+    <!-- Authentication Section -->
+    <div id="auth-section">
+      <button id="login-btn">Sign in with Google</button>
+    </div>
+    
+    <!-- Upload & Processing Section -->
+    <div id="upload-section" class="hidden">
+      <input type="file" id="file-input" accept=".pdf,image/*" />
+      <button id="process-btn">Process Report</button>
+    </div>
+    
+    <!-- Payment Section -->
+    <div id="payment-section" class="hidden">
+      <button id="pay-btn">Pay & Unlock Report</button>
+    </div>
+    
+    <!-- Final Result Section -->
+    <div id="result-section" class="hidden">
+      <h2>Your Report Summary</h2>
+      <div id="report-summary"></div>
+      <button id="download-btn">Download PDF (Optional)</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
