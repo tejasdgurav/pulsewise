@@ -27,7 +27,7 @@ header {
 
 .container {
   max-width: 640px;
-  margin: 80px auto 0;
+  margin: 80px auto;
   text-align: center;
 }
 
@@ -37,7 +37,6 @@ header {
   padding: 40px;
   cursor: pointer;
   background-color: #fff;
-  position: relative;
   transition: background-color 0.3s;
 }
 
@@ -58,6 +57,12 @@ header {
   display: none;
 }
 
+#status-message {
+  margin-top: 20px;
+  font-style: italic;
+  color: #0070f3;
+}
+
 .dashboard {
   margin-top: 40px;
   text-align: left;
@@ -76,9 +81,4 @@ header {
 .report-item a {
   color: #0070f3;
   text-decoration: none;
-}
-
-#status-message {
-  margin-top: 20px;
-  font-style: italic;
 }

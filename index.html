@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pulsewise - AI Blood Report Analysis</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Razorpay Checkout -->
+  
+  <!-- Razorpay Checkout Script -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   <!-- Tesseract.js for OCR -->
   <script src="https://unpkg.com/tesseract.js@v2.1.4/dist/tesseract.min.js"></script>
+
   <!-- jsPDF for PDF generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <!-- Top Bar with Sign-In and Dashboard Buttons -->
   <header>
     <div class="top-right">
       <button id="google-signin-btn">Sign in with Google</button>
@@ -21,7 +23,6 @@
     </div>
   </header>
 
-  <!-- Main Container -->
   <div class="container">
     <h1>Pulsewise</h1>
     <div id="upload-area" class="upload-area">
@@ -29,13 +30,14 @@
       <input type="file" id="file-input" accept=".pdf,image/*" />
     </div>
     <div id="status-message"></div>
-    <!-- Dashboard Section (hidden by default) -->
+
+    <!-- Dashboard Section (for viewing generated reports) -->
     <div id="dashboard" class="dashboard hidden">
       <h2>My Reports</h2>
       <div id="reports-list"></div>
     </div>
   </div>
-  <!-- Frontend Script -->
+
   <script src="script.js" type="module"></script>
 </body>
 </html>

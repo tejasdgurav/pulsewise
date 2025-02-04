@@ -35,18 +35,16 @@ googleSigninBtn.addEventListener("click", async () => {
   try {
     const result = await signInWithPopup(auth, provider);
     currentUser = result.user;
-    googleSigninBtn.textContent = "Signed in as " + currentUser.displayName;
+    googleSigninBtn.textContent = `Signed in as ${currentUser.displayName}`;
     myReportsBtn.classList.remove("hidden");
   } catch (error) {
     console.error("Sign-in error:", error);
-    alert("Error signing in");
+    alert("Error signing in.");
   }
 });
 
 // --- File Upload & Drag-and-Drop Handling ---
-uploadArea.addEventListener("click", () => {
-  fileInput.click();
-});
+uploadArea.addEventListener("click", () => fileInput.click());
 
 fileInput.addEventListener("change", (e) => {
   if (e.target.files.length) {
@@ -80,10 +78,12 @@ function initiatePayment() {
     alert("Please sign in with Google first.");
     return;
   }
+
   statusMessage.textContent = "Launching payment gateway...";
+
   const options = {
-    key: "rzp_live_ewrzTufDiddrHg", // REPLACE with your Razorpay API key
-    amount: 100,                   // ₹1.00 = 100 paise
+    key: "rzp_live_8cnyH5yfjbgDRD",  // REPLACE with your Razorpay key
+    amount: 100,              // Example: ₹1.00 = 100 paise
     currency: "INR",
     name: "Pulsewise",
     description: "AI Blood Report Analysis",
@@ -101,6 +101,7 @@ function initiatePayment() {
     },
     theme: { color: "#0070f3" }
   };
+
   const rzp = new Razorpay(options);
   rzp.open();
 }
@@ -111,8 +112,10 @@ async function processReport(paymentId) {
     alert("No file selected.");
     return;
   }
+
   let extractedText = "";
-  // If image, use Tesseract OCR
+
+  // If image, use Tesseract.js for OCR
   if (selectedFile.type.startsWith("image/")) {
     try {
       const { data: { text } } = await Tesseract.recognize(selectedFile, "eng");
@@ -123,28 +126,30 @@ async function processReport(paymentId) {
       return;
     }
   } else if (selectedFile.type === "application/pdf") {
-    // For PDFs, integrate pdf.js for real extraction; here we simulate.
     extractedText = "Simulated extracted text from PDF.";
   } else {
-    extractedText = "Unsupported file type.";
+    alert("Unsupported file type.");
+    return;
   }
-  
-  // Prepare payload (do not include AI summary—the backend will generate it)
+
+  // Prepare payload
   const payload = {
     userEmail: currentUser.email,
     paymentId: paymentId,
     originalFileName: selectedFile.name,
     extractedText: extractedText
   };
-  
+
   try {
-    const res = await fetch("https://script.google.com/macros/s/AKfycbwLDYvlD7hRk237QPQ-3OK4e6gK9chz9UR1hr_6ccd8wfJ1PgyIdEi5xr1kpKFVBG0o/exec", {
+    const res = await fetch("https://script.google.com/macros/s/AKfycbzYYyOn1JgI2oMpPhrP2vDkolpOYkb1ZxxFmFDkAb6CTDoDYE7qb9rptf5vg6QC8_Zn/exec", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
+
     const data = await res.json();
     console.log("Backend response:", data);
+
     if (data.result === "success" && data.aiSummary) {
       statusMessage.textContent = "Report processed. Downloading PDF...";
       downloadPDF(data.aiSummary);
@@ -183,8 +188,9 @@ myReportsBtn.addEventListener("click", () => {
 async function fetchReports(userEmail) {
   statusMessage.textContent = "Loading your reports...";
   try {
-    const res = await fetch(`https://script.google.com/macros/s/AKfycbwLDYvlD7hRk237QPQ-3OK4e6gK9chz9UR1hr_6ccd8wfJ1PgyIdEi5xr1kpKFVBG0o/exec?action=getReports&userEmail=${encodeURIComponent(userEmail)}`);
+    const res = await fetch(`https://script.google.com/macros/s/AKfycbzYYyOn1JgI2oMpPhrP2vDkolpOYkb1ZxxFmFDkAb6CTDoDYE7qb9rptf5vg6QC8_Zn/exec?action=getReports&userEmail=${encodeURIComponent(userEmail)}`);
     const data = await res.json();
+
     if (data.result === "success" && data.reports) {
       renderReports(data.reports);
       dashboard.classList.remove("hidden");
@@ -202,18 +208,20 @@ async function fetchReports(userEmail) {
 
 function renderReports(reports) {
   reportsList.innerHTML = "";
+
   if (reports.length === 0) {
     reportsList.innerHTML = "<p>No reports found.</p>";
     return;
   }
+
   reports.forEach(report => {
     const item = document.createElement("div");
     item.className = "report-item";
-    // Assume report has keys: Timestamp, Original File Name, PDF URL
+
     const ts = new Date(report["Timestamp"]);
     item.innerHTML = `<strong>${ts.toLocaleString()}</strong><br>
-      <em>${report["Original File Name"]}</em><br>
-      <a href="${report["PDF URL"]}" target="_blank">View PDF Report</a>`;
+                      <em>${report["Original File Name"]}</em><br>
+                      <a href="${report["PDF URL"]}" target="_blank">View PDF Report</a>`;
     reportsList.appendChild(item);
   });
 }
