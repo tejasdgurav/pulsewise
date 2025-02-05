@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////
-// REPLACE with your deployed Apps Script Web App URL
+// REPLACE with your final Apps Script Web App URL
 /////////////////////////////////////////////////////////
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyXTsY3lfa-wGSgDmvolQCf6nFAUue1HH3_iRynyhDymmUWIs22ewby2goP47T5Xa_/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsBSd7cZNthun2BVR6fVJn4LhIeeCfExfhV-Qst54rRBBC5CCHbc-GIScsEhhIzrRM/exec";
 
 // pdf.js worker path
 pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -65,7 +65,7 @@ window.addEventListener('load', () => {
       console.log("OCR Extracted Text:", finalText);
       statusEl.textContent = "Sending text to AI backend...";
 
-      // -- IMPORTANT: Use FormData to avoid JSON => no preflight --
+      // Use FormData => no custom Content-Type => no preflight
       const formData = new FormData();
       formData.append("extractedText", finalText);
 
@@ -80,7 +80,9 @@ window.addEventListener('load', () => {
         resultEl.innerHTML = `
           <h3>AI Summary</h3>
           <p>${json.summary}</p>
-          <p><strong>PDF Link:</strong> <a href="${json.pdfUrl}" target="_blank">${json.pdfUrl}</a></p>
+          <p><strong>PDF Link:</strong> 
+            <a href="${json.pdfUrl}" target="_blank">${json.pdfUrl}</a>
+          </p>
         `;
       } else {
         statusEl.textContent = "Server Error: " + (json.error || "Unknown");
