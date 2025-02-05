@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Pulsewise - AI Blood Report Analysis</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Pulsewise</h1>
+    <p>AI Blood Report Analysis Tool</p>
+
+    <!-- Upload Section -->
+    <div id="upload-section">
+      <input type="file" id="file-input" accept="image/*,application/pdf" />
+      <label for="file-input" id="file-label">
+        Drag & drop or click to upload your blood report
+      </label>
+    </div>
+
+    <!-- Sign In & Payment Placeholder Buttons -->
+    <button id="sign-in-btn">Sign In with Google</button>
+    <button id="payment-btn" style="display:none;">Proceed to Payment</button>
+
+    <!-- Status / Output -->
+    <div id="status"></div>
+    <div id="result"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
+  <!-- Load Firebase config -->
+  <script src="../firebase/firebase-config.js"></script>
+
+  <!-- Our Scripts -->
+  <script src="script.js"></script>
+</body>
+</html>
