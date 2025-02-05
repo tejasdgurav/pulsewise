@@ -21,7 +21,7 @@ let currentUser = null;
 let selectedFile = null;
 
 // Replace with your deployed Google Apps Script Web App URL:
-const webAppUrl = "https://script.google.com/macros/s/AKfycbybWLebhH0Yv51gy_A5J0xCA-6RzGvBuWtclTOA3LhKTn4zBGis-yhIHfmkrvACll59/exec"; 
+const webAppUrl = "https://script.google.com/macros/s/AKfycbzcGJ6T-029sWn4AtZ_uSU-xU2BQD3zoz70dlYEoRk7s6TPW67IrzGVSKTjc-Asx0YG/exec"; 
 
 // DOM elements
 const loginBtn = document.getElementById("loginBtn");
@@ -213,7 +213,7 @@ try {
   console.error("Upload error:", err);
   alert(`Upload failed: ${err.message}`);
 }
-
+}
 
 /***************************************
  * 7) Poll for PDF link
