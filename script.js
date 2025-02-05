@@ -21,7 +21,7 @@ let currentUser = null;
 let selectedFile = null;
 
 // Replace with your deployed Google Apps Script Web App URL:
-const webAppUrl = "https://script.google.com/macros/s/AKfycbyCRUS7DgfQMZsnD3yptUJb9JzaaHunTSgFluJ2SCAdJ_saNQrR8lzc29HWNm49j_x_/exec"; 
+const webAppUrl = "https://script.google.com/macros/s/AKfycbywI8_xo_oNJ9NwW5h2GmZ1sHHu6CWqatjiaDAKrqRDHV_HiIYNjjMfsxTe_0i4JrAd/exec"; 
 
 // DOM elements
 const loginBtn     = document.getElementById("loginBtn");
