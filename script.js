@@ -167,7 +167,7 @@ async function uploadFileToAppsScript(paymentId) {
   try {
     const resp = await fetch(webAppUrl, {
       method: "POST",
-      mode: "no-cors", // or 'cors' if your GAS is published with appropriate headers
+      mode: "cors", // or 'cors' if your GAS is published with appropriate headers
       body: JSON.stringify(payload),
     });
     statusSection.innerText = "Payment and upload success. Analysis in progress...";
