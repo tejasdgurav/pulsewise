@@ -117,13 +117,15 @@ async function initiatePayment() {
 
   try {
     // Fetch order ID from backend
-    const orderResponse = await fetch(`${webAppUrl}?action=CREATE_ORDER`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ amount: 100 * 100 })  // Example: INR 100 in paise
-    });
+  const orderResponse = await fetch(`${webAppUrl}?action=CREATE_ORDER`, {
+  method: "POST",
+  mode: "cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ amount: 10000 })  // INR 100 in paise
+});
+
     
     const orderData = await orderResponse.json();
     const orderId = orderData.orderId;
@@ -156,6 +158,20 @@ async function initiatePayment() {
   }
 }
 
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Str = reader.result.split("base64,")[1];
+      console.log("Base64 Encoded File:", base64Str);  // Log for debugging
+      resolve(base64Str);
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+
 /***************************************
  * 6) Upload File & Confirm Payment
  ***************************************/
@@ -172,41 +188,32 @@ async function uploadFileToAppsScript(paymentId) {
     fileData: base64File
   };
 
-  try {
-    const resp = await fetch(webAppUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!resp.ok) throw new Error("Server error");
-
-    const result = await resp.json();
-    if (result.status === "file uploaded") {
-      statusSection.innerText = "Payment and upload success. Analysis in progress...";
-      pollForPdfLink(paymentId);
-    } else {
-      throw new Error("Unexpected server response");
-    }
-  } catch (err) {
-    console.error("Upload error:", err);
-    alert("Could not upload file. Check console for details.");
-  }
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Str = reader.result.split("base64,")[1];
-      resolve(base64Str);
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
+try {
+  const resp = await fetch(webAppUrl, {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload),
   });
+
+  if (!resp.ok) {
+    throw new Error(`Server error: ${resp.status} ${resp.statusText}`);
+  }
+
+  const result = await resp.json();
+  if (result.status === "file uploaded") {
+    statusSection.innerText = "Payment and upload success. Analysis in progress...";
+    pollForPdfLink(paymentId);
+  } else {
+    throw new Error("Unexpected server response");
+  }
+} catch (err) {
+  console.error("Upload error:", err);
+  alert(`Upload failed: ${err.message}`);
 }
+
 
 /***************************************
  * 7) Poll for PDF link
