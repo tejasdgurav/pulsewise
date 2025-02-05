@@ -21,16 +21,16 @@ let currentUser = null;
 let selectedFile = null;
 
 // Replace with your deployed Google Apps Script Web App URL:
-const webAppUrl = "https://script.google.com/macros/s/AKfycbywI8_xo_oNJ9NwW5h2GmZ1sHHu6CWqatjiaDAKrqRDHV_HiIYNjjMfsxTe_0i4JrAd/exec"; 
+const webAppUrl = "https://script.google.com/macros/s/AKfycbze5vuDCGjYAuKumfiCftBJ8SrnOgL6UepBZnxmSF6Ov0OI51f0GPnmBfiC8jnSPXzg/exec"; 
 
 // DOM elements
-const loginBtn     = document.getElementById("loginBtn");
-const logoutBtn    = document.getElementById("logoutBtn");
-const payBtn       = document.getElementById("payBtn");
-const uploadSection= document.getElementById("uploadSection");
-const statusSection= document.getElementById("statusSection");
-const resultSection= document.getElementById("resultSection");
-const pdfLink      = document.getElementById("pdfLink");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const payBtn = document.getElementById("payBtn");
+const uploadSection = document.getElementById("uploadSection");
+const statusSection = document.getElementById("statusSection");
+const resultSection = document.getElementById("resultSection");
+const pdfLink = document.getElementById("pdfLink");
 
 /***********************
  * 3) Auth Functions
@@ -103,9 +103,9 @@ function handleFileSelect(ev) {
 }
 
 /*****************************
- * 5) Payment (Razorpay)
+ * 5) Payment (Razorpay Integration)
  *****************************/
-function initiatePayment() {
+async function initiatePayment() {
   if (!selectedFile) {
     alert("No file selected!");
     return;
@@ -115,47 +115,55 @@ function initiatePayment() {
     return;
   }
 
-  // Typically, you’d create an order from your backend to get order_id.
-  // For simplicity, let’s create a random order_id or simulate it.
-  const orderId = "ORDER_" + new Date().getTime();
+  try {
+    // Fetch order ID from backend
+    const orderResponse = await fetch(`${webAppUrl}?action=CREATE_ORDER`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ amount: 100 * 100 })  // Example: INR 100 in paise
+    });
+    
+    const orderData = await orderResponse.json();
+    const orderId = orderData.orderId;
 
-  const options = {
-    key: "rzp_live_8cnyH5yfjbgDRD", // Test or live key
-    amount: 1 * 100, // e.g. INR 100. (100 = 1.00 in smallest currency unit)
-    currency: "INR",
-    name: "AI Blood Report Tool",
-    description: "Blood Report Analysis Fee",
-    order_id: orderId, // must be unique for each transaction
-    handler: function (response) {
-      // Payment successful
-      console.log("Razorpay Payment ID:", response.razorpay_payment_id);
-      // 1) Upload File to Apps Script
-      uploadFileToAppsScript(response.razorpay_payment_id);
-    },
-    prefill: {
-      email: currentUser.email,
-      contact: "9999999999"
-    },
-    theme: {
-      color: "#000000"
-    }
-  };
+    const options = {
+      key: orderData.razorpayKey,  // Securely fetched from backend
+      amount: 1 * 100,
+      currency: "INR",
+      name: "AI Blood Report Tool",
+      description: "Blood Report Analysis Fee",
+      order_id: orderId,
+      handler: function (response) {
+        console.log("Razorpay Payment ID:", response.razorpay_payment_id);
+        uploadFileToAppsScript(response.razorpay_payment_id);
+      },
+      prefill: {
+        email: currentUser.email,
+        contact: "9999999999"
+      },
+      theme: {
+        color: "#000000"
+      }
+    };
 
-  const rzp = new Razorpay(options);
-  rzp.open();
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    console.error("Payment initiation error:", err);
+    alert("Could not initiate payment. Please try again.");
+  }
 }
 
 /***************************************
  * 6) Upload File & Confirm Payment
  ***************************************/
 async function uploadFileToAppsScript(paymentId) {
-  // Show status
   statusSection.innerText = "Uploading file and confirming payment...";
-  
-  // Convert file to base64 so we can send it via fetch
+
   const base64File = await fileToBase64(selectedFile);
 
-  // Construct payload for Apps Script
   const payload = {
     action: "UPLOAD_FILE",
     email: currentUser.email,
@@ -167,12 +175,21 @@ async function uploadFileToAppsScript(paymentId) {
   try {
     const resp = await fetch(webAppUrl, {
       method: "POST",
-      mode: "cors", // or 'cors' if your GAS is published with appropriate headers
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(payload),
     });
-    statusSection.innerText = "Payment and upload success. Analysis in progress...";
-    // Now we can poll or wait for the PDF link from the sheet.
-    pollForPdfLink(paymentId);
+
+    if (!resp.ok) throw new Error("Server error");
+
+    const result = await resp.json();
+    if (result.status === "file uploaded") {
+      statusSection.innerText = "Payment and upload success. Analysis in progress...";
+      pollForPdfLink(paymentId);
+    } else {
+      throw new Error("Unexpected server response");
+    }
   } catch (err) {
     console.error("Upload error:", err);
     alert("Could not upload file. Check console for details.");
@@ -195,30 +212,33 @@ function fileToBase64(file) {
  * 7) Poll for PDF link
  ***************************************/
 async function pollForPdfLink(paymentId) {
-  // In a real implementation, you might use websockets or a more direct approach.
-  // For demonstration, we’ll poll every 5 seconds a few times.
   let attempts = 0;
-  const maxAttempts = 12; // 1 minute total
-  
+  const maxAttempts = 12;
+
   const intervalId = setInterval(async () => {
     attempts++;
     try {
       const checkResp = await fetch(`${webAppUrl}?action=CHECK_PDF&paymentId=${paymentId}`);
+      if (!checkResp.ok) throw new Error("Failed to check PDF");
+
       const data = await checkResp.json();
       if (data && data.pdfLink) {
         clearInterval(intervalId);
         statusSection.innerText = "Your report is ready!";
         pdfLink.href = data.pdfLink;
         resultSection.classList.remove("hidden");
-      } else {
-        statusSection.innerText = `Analysis in progress... (Attempt ${attempts}/${maxAttempts})`;
+        return;
       }
-      if (attempts >= maxAttempts) {
-        clearInterval(intervalId);
-        statusSection.innerText = "Processing took too long. Please check later.";
-      }
+
+      statusSection.innerText = `Analysis in progress... (Attempt ${attempts}/${maxAttempts})`;
     } catch (err) {
       console.error("Check PDF error:", err);
+      statusSection.innerText = "An error occurred while checking the report.";
+    }
+
+    if (attempts >= maxAttempts) {
+      clearInterval(intervalId);
+      statusSection.innerText = "Processing took too long. Please check later.";
     }
   }, 5000);
 }
