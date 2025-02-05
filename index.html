@@ -2,19 +2,22 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>Pulsewise - Minimal OCR + AI</title>
+  <title>Pulsewise - PDF OCR + AI</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Tesseract.js (for client-side OCR) -->
+  
+  <!-- pdf.js library (must set workerSrc in script.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
+  <!-- Tesseract.js for OCR -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Pulsewise</h1>
-    <p>Upload or drop your blood report (image/PDF) to get an AI-generated summary.</p>
+    <p>Upload or drop your PDF (or image) to get an AI-generated summary.</p>
 
     <div class="upload-area" id="uploadArea">
       <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;" />
-      <p>Drag &amp; drop or click to select a file</p>
+      <p>Click or drop a PDF/image here</p>
     </div>
 
     <button id="processBtn">Process Report</button>
