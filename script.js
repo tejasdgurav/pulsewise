@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////
 // REPLACE with your final Apps Script Web App URL
 /////////////////////////////////////////////////////////
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsBSd7cZNthun2BVR6fVJn4LhIeeCfExfhV-Qst54rRBBC5CCHbc-GIScsEhhIzrRM/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrY3HivpOobPQ4N5Tao483dQB-8aPqUMnSMwSPOSeYHvy53MMJrrsTlcWPKK7c2akb/exec";
 
 // pdf.js worker path
 pdfjsLib.GlobalWorkerOptions.workerSrc =
