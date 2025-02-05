@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyss7RWTiFpW9SDlL0ONFIu_iEN4rnSccNaM62-pPD5VebCrns114BjpZGio7Wkdgto/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3F-oQ6N7kB4-vdaBbq-lYLiWFrqm2XksWbXb5-xN9hM5XCNuChFKfpAk8cmm6xzSJ/exec";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   "https://cdn.jsdelivr.net/npm/pdfjs-dist@3/build/pdf.worker.min.js";
