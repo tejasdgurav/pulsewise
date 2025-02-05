@@ -1,52 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Blood Report Analysis</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Razorpay Script (Test/Live as required) -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <!-- Firebase App (Core SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-  <!-- Firebase Auth SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
-</head>
+  <meta charset="UTF-8"/>
+  <title>Pulsewise - Hosted Externally</title>
 
+  <!-- Tesseract.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-  <header>
-    <div class="header-left">AI Blood Analysis</div>
-    <div class="header-right">
-      <button id="loginBtn" class="btn primary" onclick="signInGoogle()">Sign In with Google</button>
-      <button id="logoutBtn" class="btn secondary hidden" onclick="logout()">Logout</button>
+  <div class="container">
+    <h1>Pulsewise - AI Blood Report Analysis</h1>
+    <p>Upload or drop your blood report below to get an AI-generated summary.</p>
+
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept="image/*, .pdf" style="display:none;" />
+      <p>Drag &amp; drop, or click to select a file</p>
     </div>
-  </header>
-  
-  <main>
-    <div class="upload-section" id="uploadSection">
-      <h1>Upload Your Blood Report</h1>
-      <div class="dropzone" 
-           id="dropzone"
-           onclick="document.getElementById('fileInput').click()"
-           ondragover="allowDrag(event)"
-           ondrop="handleDrop(event)">
-        <p>Drag & Drop or Click to Upload</p>
-      </div>
-      <input type="file" id="fileInput" accept="application/pdf,image/*" onchange="handleFileSelect(event)" hidden />
-      
-      <button id="payBtn" class="btn primary hidden" onclick="initiatePayment()">Proceed to Payment</button>
-    </div>
-    
-    <div class="status-section" id="statusSection">
-      <!-- This will show status messages, e.g. "Payment confirmed!" or "Analysis in progress..." -->
-    </div>
-    
-    <div class="result-section hidden" id="resultSection">
-      <h2>Your AI-Generated Report</h2>
-      <p>Your PDF report is ready. <a href="#" id="pdfLink" target="_blank">Download PDF</a></p>
-      <button class="btn secondary" onclick="resetFlow()">Generate Another Report</button>
-    </div>
-  </main>
-  
+
+    <button id="processBtn">Process Report</button>
+
+    <div id="status"></div>
+    <div id="result"></div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
