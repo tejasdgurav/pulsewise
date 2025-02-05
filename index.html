@@ -1,238 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Pulsewise - AI Blood Report Analysis</title>
-  <style>
-    /* ========== Minimal Inline CSS ========== */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 0;
-      background: #f9f9f9;
-    }
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-      text-align: center;
-      background: #fff;
-      padding: 30px;
-      border-radius: 8px;
-    }
-    #upload-section {
-      border: 2px dashed #bbb;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      position: relative;
-    }
-    #file-input {
-      position: absolute;
-      left: 0; top: 0; bottom: 0; right: 0;
-      width: 100%; height: 100%;
-      opacity: 0; cursor: pointer;
-    }
-    #file-label {
-      display: block;
-      color: #888;
-      cursor: pointer;
-    }
-    button {
-      background: #4285f4;
-      border: none;
-      padding: 10px 20px;
-      color: #fff;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #2c6bd7;
-    }
-    #status {
-      margin-top: 20px;
-      color: #333;
-    }
-    #result {
-      margin-top: 20px;
-      color: #333;
-      word-break: break-all;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Pulsewise</h1>
-    <p>AI Blood Report Analysis Tool</p>
-
-    <!-- Upload Section -->
-    <div id="upload-section">
-      <input type="file" id="file-input" accept="image/*,application/pdf" />
-      <label for="file-input" id="file-label">
-        Drag & drop or click to upload your blood report
-      </label>
-    </div>
-
-    <!-- Sign In & Payment Placeholder Buttons -->
-    <button id="sign-in-btn">Sign In with Google</button>
-    <button id="payment-btn" style="display:none;">Proceed to Payment</button>
-
-    <!-- Status / Output -->
-    <div id="status"></div>
-    <div id="result"></div>
-  </div>
-
-  <!-- ========== Firebase JS SDK from CDN ========== -->
+  <title>AI Blood Report Analysis</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Razorpay Script (Test/Live as required) -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Firebase App (Core SDK) -->
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <!-- Firebase Auth SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
+</head>
 
-  <!-- ========== All our JS in one place ========== -->
-  <script>
-    /****************************************************
-     * 1. Firebase Configuration
-     ****************************************************/
-    // Replace with your own Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBgGoJ2s9KN3YNtS3ZY9sb3GlwoPQp8kak",
-      authDomain: "pulsewise-ff8e7.firebaseapp.com",
-      projectId: "pulsewise-ff8e7",
-      storageBucket: "pulsewise-ff8e7.appspot.com",
-      messagingSenderId: "595991869636",
-      appId: "1:595991869636:web:d496baec48a18460773191"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-
-    // Prepare Google Auth provider
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-    /****************************************************
-     * 2. Global Variables
-     ****************************************************/
-    // Your deployed Apps Script Web App URL
-    const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwlLicqKKHN0ihznY4_3VkRMo4U-ceArCyCRgJW7y7hU8o3W8tw9bN8pitUtI2qIexo/exec";
-
-    let currentUser = null;    // Will store the signed-in user
-    let selectedFile = null;   // The user-selected file
-    let fileMimeType = null;   // The MIME type of the file
-
-    /****************************************************
-     * 3. DOM Elements
-     ****************************************************/
-    const fileInput = document.getElementById("file-input");
-    const signInBtn = document.getElementById("sign-in-btn");
-    const paymentBtn = document.getElementById("payment-btn");
-    const statusDiv = document.getElementById("status");
-    const resultDiv = document.getElementById("result");
-
-    /****************************************************
-     * 4. Event Listeners
-     ****************************************************/
-    fileInput.addEventListener("change", handleFileSelect);
-    signInBtn.addEventListener("click", signInWithGoogle);
-    paymentBtn.addEventListener("click", handlePaymentPlaceholder);
-
-    /****************************************************
-     * 5. Functions
-     ****************************************************/
-
-    /**
-     * Handle file selection
-     */
-    function handleFileSelect(event) {
-      const file = event.target.files[0];
-      if (file) {
-        selectedFile = file;
-        fileMimeType = file.type;
-        statusDiv.innerText = `Selected file: ${file.name}`;
-
-        // Prompt user to sign in if not signed in
-        if (!currentUser) {
-          statusDiv.innerText += "\nPlease sign in with Google to proceed.";
-        } else {
-          // If user is already signed in, show the payment button (placeholder).
-          paymentBtn.style.display = "inline-block";
-        }
-      }
-    }
-
-    /**
-     * Sign in with Google (Firebase)
-     */
-    function signInWithGoogle() {
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => {
-          currentUser = result.user;
-          statusDiv.innerText = `Signed in as: ${currentUser.email}`;
-          // If a file is selected, let them proceed to payment
-          if (selectedFile) {
-            paymentBtn.style.display = "inline-block";
-          }
-        })
-        .catch((error) => {
-          console.error("Sign in error", error);
-          statusDiv.innerText = "Google Sign-In failed. See console.";
-        });
-    }
-
-    /**
-     * Placeholder for Payment Step
-     * (Replace with your Razorpay or other payment integration)
-     */
-    function handlePaymentPlaceholder() {
-      statusDiv.innerText = "Simulating payment success...";
-      // Simulate success after 1 second
-      setTimeout(() => {
-        uploadFileAndProcess(); 
-      }, 1000);
-    }
-
-    /**
-     * Upload file + user info to Apps Script for processing
-     */
-    function uploadFileAndProcess() {
-      if (!selectedFile || !currentUser) {
-        statusDiv.innerText = "File or user not available.";
-        return;
-      }
-
-      // Read file as base64
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64Data = btoa(e.target.result);
-
-        const payload = {
-          fileData: base64Data,
-          filename: selectedFile.name,
-          mimeType: fileMimeType,
-          email: currentUser.email,
-          // Payment placeholders
-          paymentId: "PAYMENT_ID_PLACEHOLDER",
-          paymentStatus: "success"
-        };
-
-        // Send to Apps Script
-        fetch(APPS_SCRIPT_WEBAPP_URL, {
-          method: "POST",
-          mode: "no-cors",  // If your web app handles CORS, change to "cors"
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        })
-        .then(response => {
-          // With "no-cors", we can't read the response directly.
-          statusDiv.innerText = 
-            "File uploaded. Server is processing... This may take a moment.";
-          // You could optionally poll a Sheet or a file to see if processing is done.
-        })
-        .catch(error => {
-          console.error(error);
-          statusDiv.innerText = "Error uploading file: " + error;
-        });
-      };
-      reader.readAsBinaryString(selectedFile);
-    }
-  </script>
+<body>
+  <header>
+    <div class="header-left">AI Blood Analysis (Notion Style)</div>
+    <div class="header-right">
+      <button id="loginBtn" class="btn primary" onclick="signInGoogle()">Sign In with Google</button>
+      <button id="logoutBtn" class="btn secondary hidden" onclick="logout()">Logout</button>
+    </div>
+  </header>
+  
+  <main>
+    <div class="upload-section" id="uploadSection">
+      <h1>Upload Your Blood Report</h1>
+      <div class="dropzone" 
+           id="dropzone"
+           onclick="document.getElementById('fileInput').click()"
+           ondragover="allowDrag(event)"
+           ondrop="handleDrop(event)">
+        <p>Drag & Drop or Click to Upload</p>
+      </div>
+      <input type="file" id="fileInput" accept="application/pdf,image/*" onchange="handleFileSelect(event)" hidden />
+      
+      <button id="payBtn" class="btn primary hidden" onclick="initiatePayment()">Proceed to Payment</button>
+    </div>
+    
+    <div class="status-section" id="statusSection">
+      <!-- This will show status messages, e.g. "Payment confirmed!" or "Analysis in progress..." -->
+    </div>
+    
+    <div class="result-section hidden" id="resultSection">
+      <h2>Your AI-Generated Report</h2>
+      <p>Your PDF report is ready. <a href="#" id="pdfLink" target="_blank">Download PDF</a></p>
+      <button class="btn secondary" onclick="resetFlow()">Generate Another Report</button>
+    </div>
+  </main>
+  
+  <script src="script.js"></script>
 </body>
 </html>
