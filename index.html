@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8"/>
-  <title>Pulsewise - No Preflight Demo</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- pdf.js -->
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
-  <!-- Tesseract.js -->
+  <meta charset="utf-8"/>
+  <title>Pulsewise</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3/build/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Pulsewise</h1>
-    <p>Upload or drop your PDF/image to get an AI-generated summary.</p>
-
-    <div class="upload-area" id="uploadArea">
-      <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;" />
-      <p>Click or drop a file here</p>
-    </div>
-
-    <button id="processBtn">Process Report</button>
-
-    <div id="status"></div>
-    <div id="result"></div>
+<div class="container">
+  <h1>Pulsewise</h1>
+  <div class="upload-area" id="dropArea">
+    <input type="file" id="fileInput" accept=".pdf,image/*" style="display:none;"/>
+    <p>Drop or click to select a PDF/image</p>
   </div>
-
-  <script src="script.js"></script>
+  <button id="goBtn">Process</button>
+  <div id="status"></div>
+  <div id="result"></div>
+</div>
+<script src="script.js"></script>
 </body>
 </html>

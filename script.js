@@ -1,140 +1,95 @@
-/////////////////////////////////////////////////////////
-// REPLACE with your final Apps Script Web App URL
-/////////////////////////////////////////////////////////
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrY3HivpOobPQ4N5Tao483dQB-8aPqUMnSMwSPOSeYHvy53MMJrrsTlcWPKK7c2akb/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyss7RWTiFpW9SDlL0ONFIu_iEN4rnSccNaM62-pPD5VebCrns114BjpZGio7Wkdgto/exec";
 
-// pdf.js worker path
 pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js";
+  "https://cdn.jsdelivr.net/npm/pdfjs-dist@3/build/pdf.worker.min.js";
 
 let selectedFile = null;
 
 window.addEventListener('load', () => {
-  const uploadArea = document.getElementById('uploadArea');
+  const dropArea = document.getElementById('dropArea');
   const fileInput = document.getElementById('fileInput');
-  const processBtn = document.getElementById('processBtn');
+  const goBtn = document.getElementById('goBtn');
   const statusEl = document.getElementById('status');
   const resultEl = document.getElementById('result');
 
-  // Click -> open file picker
-  uploadArea.addEventListener('click', () => {
-    fileInput.click();
-  });
+  dropArea.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', e => {
     selectedFile = e.target.files[0];
   });
 
-  // Drag & drop
-  uploadArea.addEventListener('dragover', e => {
-    e.preventDefault();
-    uploadArea.classList.add('highlight');
+  dropArea.addEventListener('dragover', e => {
+    e.preventDefault(); dropArea.classList.add('highlight');
   });
-  uploadArea.addEventListener('dragleave', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('highlight');
+  dropArea.addEventListener('dragleave', e => {
+    e.preventDefault(); dropArea.classList.remove('highlight');
   });
-  uploadArea.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('highlight');
+  dropArea.addEventListener('drop', e => {
+    e.preventDefault(); dropArea.classList.remove('highlight');
     selectedFile = e.dataTransfer.files[0];
     fileInput.files = e.dataTransfer.files;
   });
 
-  // Process button
-  processBtn.addEventListener('click', () => {
+  goBtn.addEventListener('click', async () => {
     if (!selectedFile) {
-      statusEl.textContent = "No file selected.";
+      statusEl.textContent = "No file chosen.";
       return;
     }
-    processFile(selectedFile);
-  });
-
-  async function processFile(file) {
-    statusEl.textContent = "Reading file...";
+    statusEl.textContent = "Working...";
     resultEl.innerHTML = "";
 
+    let text = "";
     try {
-      // If it's a PDF, convert to image(s) with pdf.js; otherwise, OCR directly
-      let finalText = "";
-      if (file.type.toLowerCase().includes("pdf")) {
-        finalText = await ocrPdf(file);
+      if (selectedFile.type.toLowerCase().includes("pdf")) {
+        text = await ocrPdf(selectedFile);
       } else {
-        finalText = await ocrImage(file);
-      }
-
-      console.log("OCR Extracted Text:", finalText);
-      statusEl.textContent = "Sending text to AI backend...";
-
-      // Use FormData => no custom Content-Type => no preflight
-      const formData = new FormData();
-      formData.append("extractedText", finalText);
-
-      const response = await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        body: formData
-      });
-      const json = await response.json();
-
-      if (json.success) {
-        statusEl.textContent = "Analysis complete!";
-        resultEl.innerHTML = `
-          <h3>AI Summary</h3>
-          <p>${json.summary}</p>
-          <p><strong>PDF Link:</strong> 
-            <a href="${json.pdfUrl}" target="_blank">${json.pdfUrl}</a>
-          </p>
-        `;
-      } else {
-        statusEl.textContent = "Server Error: " + (json.error || "Unknown");
+        text = await ocrImage(selectedFile);
       }
     } catch (err) {
-      console.error(err);
-      statusEl.textContent = "Error: " + err.message;
-    }
-  }
-
-  /**
-   * Convert PDF pages to images with pdf.js, then OCR each image with Tesseract
-   */
-  async function ocrPdf(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    const numPages = pdf.numPages;
-
-    let combinedText = "";
-
-    for (let i = 1; i <= numPages; i++) {
-      statusEl.textContent = `Rendering page ${i}/${numPages}...`;
-      const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale: 1.5 });
-
-      // Create a canvas for this page
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: ctx, viewport }).promise;
-
-      // Convert to data URL
-      const dataURL = canvas.toDataURL('image/png');
-
-      // OCR
-      statusEl.textContent = `OCR on page ${i}...`;
-      const { data: { text } } = await Tesseract.recognize(dataURL, 'eng');
-      combinedText += text + "\n";
+      statusEl.textContent = "OCR error: " + err.message;
+      return;
     }
 
-    return combinedText;
-  }
-
-  /**
-   * OCR an image file (JPG, PNG, etc.) directly with Tesseract
-   */
-  async function ocrImage(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    // Tesseract can read arrayBuffer for images
-    const { data: { text } } = await Tesseract.recognize(arrayBuffer, 'eng');
-    return text;
-  }
+    statusEl.textContent = "Sending to AI...";
+    try {
+      const fd = new FormData();
+      fd.append("extractedText", text);
+      const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: fd });
+      const js = await res.json();
+      if (js.success) {
+        statusEl.textContent = "Done!";
+        resultEl.innerHTML = `
+          <p><strong>Summary:</strong> ${js.summary}</p>
+          <p><strong>PDF:</strong> <a href="${js.pdfUrl}" target="_blank">Open</a></p>
+        `;
+      } else {
+        statusEl.textContent = "Server error: " + (js.error || "Unknown");
+      }
+    } catch (e) {
+      statusEl.textContent = "Request error: " + e.message;
+    }
+  });
 });
+
+async function ocrPdf(file) {
+  const ab = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  let finalText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const viewport = page.getViewport({ scale:1.5 });
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const dataURL = canvas.toDataURL('image/png');
+    const { data:{ text } } = await Tesseract.recognize(dataURL, 'eng');
+    finalText += text + "\n";
+  }
+  return finalText;
+}
+
+async function ocrImage(file) {
+  const ab = await file.arrayBuffer();
+  const { data:{ text } } = await Tesseract.recognize(ab, 'eng');
+  return text;
+}
