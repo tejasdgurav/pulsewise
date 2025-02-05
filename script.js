@@ -2,12 +2,12 @@
  * 1) Firebase Config
  ***********************/
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-  projectId: "YOUR_FIREBASE_PROJECT_ID",
-  storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID",
+  apiKey: "AIzaSyBgGoJ2s9KN3YNtS3ZY9sb3GlwoPQp8kak",
+  authDomain: "pulsewise-ff8e7.firebaseapp.com",
+  projectId: "pulsewise-ff8e7",
+  storageBucket: "pulsewise-ff8e7.appspot.com",
+  messagingSenderId: "595991869636",
+  appId: "1:595991869636:web:d496baec48a18460773191",
 };
 
 // Initialize Firebase
@@ -21,7 +21,7 @@ let currentUser = null;
 let selectedFile = null;
 
 // Replace with your deployed Google Apps Script Web App URL:
-const webAppUrl = "YOUR_DEPLOYED_APPS_SCRIPT_WEBAPP_URL"; 
+const webAppUrl = "https://script.google.com/macros/s/AKfycbwEf3WC5Aex1WQV5Vr33ySWUzzMEbnbESski31S5yBvDV9W62ZzIyj49dGU31ocT2Yl/exec"; 
 
 // DOM elements
 const loginBtn     = document.getElementById("loginBtn");
@@ -120,8 +120,8 @@ function initiatePayment() {
   const orderId = "ORDER_" + new Date().getTime();
 
   const options = {
-    key: "YOUR_RAZORPAY_KEY", // Test or live key
-    amount: 100 * 100, // e.g. INR 100. (100 = 1.00 in smallest currency unit)
+    key: "rzp_live_8cnyH5yfjbgDRD", // Test or live key
+    amount: 1 * 100, // e.g. INR 100. (100 = 1.00 in smallest currency unit)
     currency: "INR",
     name: "AI Blood Report Tool",
     description: "Blood Report Analysis Fee",
