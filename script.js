@@ -1,7 +1,7 @@
-// REPLACE THIS with the actual Apps Script web app URL
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwvSxx0PGuHIe4fJG_KZzc02_GRZB8EVtoHBxX-OR-hiCRx26iZwvw0khisfh9aD68/exec";
+// Replace with your actual Apps Script web app URL:
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwM7QNNjhQodHu4jcjhhAaWnvqhqr_pqSCLEuTWEUSJ7EwXaebX-4zKWsK02c7UpRam/exec";
 
-// Track the user’s selected file
+// We store the selected file globally
 let selectedFile = null;
 
 window.addEventListener('load', () => {
@@ -11,17 +11,16 @@ window.addEventListener('load', () => {
   const statusEl = document.getElementById('status');
   const resultEl = document.getElementById('result');
 
-  // Click upload area => open file picker
+  // Click event on upload area => open file dialog
   uploadArea.addEventListener('click', () => {
     fileInput.click();
   });
-
-  // File input change
+  // When user selects a file via dialog
   fileInput.addEventListener('change', (e) => {
     selectedFile = e.target.files[0];
   });
 
-  // Drag & drop
+  // Drag & drop events
   uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadArea.classList.add('highlight');
@@ -34,54 +33,51 @@ window.addEventListener('load', () => {
     e.preventDefault();
     uploadArea.classList.remove('highlight');
     selectedFile = e.dataTransfer.files[0];
-    fileInput.files = e.dataTransfer.files; // so we see it in the input
+    fileInput.files = e.dataTransfer.files;
   });
 
   // Process button
   processBtn.addEventListener('click', () => {
     if (!selectedFile) {
-      statusEl.textContent = "Please select a file first.";
+      statusEl.textContent = 'Please select a file first.';
       return;
     }
     processFile(selectedFile);
   });
 
   async function processFile(file) {
-    statusEl.textContent = "Extracting text with Tesseract... please wait.";
-    resultEl.innerHTML = "";
+    statusEl.textContent = 'Running OCR... please wait.';
+    resultEl.innerHTML = '';
 
     try {
-      // Run OCR in browser
-      const { data: { text } } = await Tesseract.recognize(file, 'eng');
-      console.log("Extracted text:", text);
+      // 1) Convert file to ArrayBuffer for Tesseract
+      const arrayBuffer = await file.arrayBuffer();
+      // 2) OCR with Tesseract in the browser
+      const { data: { text } } = await Tesseract.recognize(arrayBuffer, 'eng');
+      console.log('OCR Extracted Text:', text);
 
-      statusEl.textContent = "Sending to Apps Script for AI summary...";
-
-      // Send extracted text to Apps Script
-      const response = await fetch(APPS_SCRIPT_URL, {
+      statusEl.textContent = 'Sending text to AI backend...';
+      // 3) Send extracted text to Apps Script
+      const resp = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          extractedText: text,
-          // filename: file.name  // optional, if you want to pass the original filename
-        })
+        body: JSON.stringify({ extractedText: text })
       });
+      const json = await resp.json();
 
-      const result = await response.json();
-      if (result.success) {
-        statusEl.textContent = "Analysis complete!";
+      if (json.success) {
+        statusEl.textContent = 'Analysis complete!';
         resultEl.innerHTML = `
-          <p><strong>Report ID:</strong> ${result.reportId}</p>
-          <p><strong>PDF Link:</strong> <a href="${result.pdfUrl}" target="_blank">${result.pdfUrl}</a></p>
           <h3>AI Summary</h3>
-          <pre>${result.summary}</pre>
+          <p>${json.summary}</p>
+          <p><strong>PDF Link:</strong> <a href="${json.pdfUrl}" target="_blank">${json.pdfUrl}</a></p>
         `;
       } else {
-        statusEl.textContent = "Error from server: " + (result.error || "Unknown");
+        statusEl.textContent = 'Server Error: ' + (json.error || 'Unknown');
       }
     } catch (err) {
       console.error(err);
-      statusEl.textContent = "Error: " + err.message;
+      statusEl.textContent = 'Error: ' + err.message;
     }
   }
 });

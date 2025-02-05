@@ -2,20 +2,19 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>Pulsewise - Hosted Externally</title>
-
-  <!-- Tesseract.js from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+  <title>Pulsewise - Minimal OCR + AI</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Tesseract.js (for client-side OCR) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Pulsewise - AI Blood Report Analysis</h1>
-    <p>Upload or drop your blood report below to get an AI-generated summary.</p>
+    <h1>Pulsewise</h1>
+    <p>Upload or drop your blood report (image/PDF) to get an AI-generated summary.</p>
 
     <div class="upload-area" id="uploadArea">
-      <input type="file" id="fileInput" accept="image/*, .pdf" style="display:none;" />
-      <p>Drag &amp; drop, or click to select a file</p>
+      <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none;" />
+      <p>Drag &amp; drop or click to select a file</p>
     </div>
 
     <button id="processBtn">Process Report</button>
